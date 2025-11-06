@@ -1,128 +1,21 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bluppi AR</title>
-
-  <!-- Libs stables -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
-  <!-- Caméra derrière, canvas AR transparent devant -->
-  <style>
-    html, body { margin:0; padding:0; height:100%; overflow:hidden; background:transparent; }
-    .a-canvas, canvas { background:transparent !important; }
-    .mindar-image-container,
-    .mindar-image-container video {
-      position: fixed !important; inset: 0 !important;
-      width: 100vw !important; height: 100vh !important;
-      object-fit: cover !important; z-index: 0 !important;
-    }
-    .a-canvas { position: fixed !important; inset: 0 !important; z-index: 1 !important; }
-    #toast{
-      position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
-      background:#000a; color:#fff; padding:8px 12px; border-radius:8px;
-      font-family:system-ui,Arial,sans-serif; font-size:14px; z-index:3; display:none;
-    }
-  </style>
-</head>
-<body>
-  <div id="toast"></div>
-
-  <a-scene
-    id="scene"
-    mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
-    embedded
-    color-space="sRGB"
-    renderer="colorManagement: true; physicallyCorrectLights: true; alpha: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    loading-screen="enabled: false"
-  >
-    <a-assets timeout="30000">
-      <!-- ⚠️ mets ICI l'URL ABSOLUE de ta vidéo (teste-la seule dans le navigateur) -->
-      <video id="bluppi-video"
-             src="https://achille-create.github.io/assets/img/drop1/bluppi.webm"
-             preload="auto" autoplay loop muted playsinline
-             webkit-playsinline crossorigin="anonymous"></video>
-      <!-- Poster optionnel (fallback) -->
-      <img id="fallback" src="https://achille-create.github.io/assets/img/brand/og.jpg">
-    </a-assets>
-
-    <a-camera position="0 0 0"></a-camera>
-
-    <!-- Quand la cible est reconnue, on affiche d'abord un plan magenta (debug),
-         puis on remplace par la vidéo dès qu'elle est prête -->
-    <a-entity id="marker" mindar-image-target="targetIndex: 0">
-      <a-plane id="overlay"
-               width="1" height="1" position="0 0 0.01"
-               color="#FF00FF" visible="false">
-      </a-plane>
-    </a-entity>
-  </a-scene>
-
-  <script>
-    const toast  = document.getElementById('toast');
-    const show   = (m)=>{ toast.textContent=m; toast.style.display='block'; clearTimeout(show.t); show.t=setTimeout(()=>toast.style.display='none', 2500); };
-
-    const marker = document.querySelector('#marker');
-    const plane  = document.querySelector('#overlay');
-    const video  = document.querySelector('#bluppi-video');
-
-    // 1) DEBUG: montre le plan magenta quand la cible est vue
-    marker.addEventListener('targetFound', ()=> {
-      plane.setAttribute('visible', true);
-      show('Cible détectée');
-      // on essaye de lire la vidéo immédiatement (iOS exige un play() suite à une action user, mais en tracking ça passe souvent)
-      video.play().catch(()=>{ /* silencieux */ });
-    });
-    marker.addEventListener('targetLost', ()=> {
-      // optionnel: video.pause();
-    });
-
-    // 2) Quand la vidéo est prête, on remplace la matière du plan par la vidéo
-    function attachVideoTexture(){
-      plane.setAttribute('material', 'src: #bluppi-video; transparent: true;');
-      // on garde une légère élévation pour éviter le z-fighting
-      plane.setAttribute('position', '0 0 0.01');
-      show('Vidéo attachée');
-    }
-
-    // selon les navigateurs, l’un de ces events arrive
-    video.addEventListener('loadeddata', attachVideoTexture, { once:true });
-    video.addEventListener('canplay',    attachVideoTexture, { once:true });
-    video.addEventListener('error',      (e)=> show('Erreur vidéo'), { once:true });
-
-    // 3) Sécurité: si la vidéo ne charge pas en 3s, on bascule sur une image pour vérifier que l’overlay s’affiche
-    setTimeout(()=>{
-      const mat = plane.getAttribute('material') || {};
-      if (!mat.src) {
-        plane.setAttribute('material', 'src: #fallback;');
-        show('Fallback image (vérifie URL vidéo)');
-      }
-    }, 3000);
-  </script>
-  <script>
-let lockCount = 0;
-let locked = false;
-
-marker.addEventListener('targetFound', () => {
-  lockCount = 0;
-  locked = false;
-});
-
-scene.addEventListener('targetUpdated', (e) => {
-  if (!locked) {
-    lockCount++;
-    if (lockCount > 10) { // après 10 frames stables
-      locked = true;
-      const entity = document.querySelector('#overlay');
-      entity.object3D.matrixAutoUpdate = false;
-      console.log("🔒 Tracking verrouillé");
-    }
-  }
-});
-</script>
-</body>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  </head>
+  <body style="margin:0;overflow:hidden;background:transparent">
+    <a-scene mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
+             embedded renderer="alpha:true" vr-mode-ui="enabled:false"
+             device-orientation-permission-ui="enabled:false">
+      <a-assets>
+        <video id="v" src="https://achille-create.github.io/assets/img/drop1/bluppi.webm"
+               autoplay loop muted playsinline></video>
+      </a-assets>
+      <a-camera></a-camera>
+      <a-entity mindar-image-target="targetIndex:0">
+        <a-plane width="1" height="1" position="0 0 0.01"
+                 material="src:#v;transparent:true;"></a-plane>
+      </a-entity>
+    </a-scene>
+  </body>
 </html>
