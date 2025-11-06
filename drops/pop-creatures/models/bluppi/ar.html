@@ -12,24 +12,6 @@
       #loading { color: white; text-align: center; position: absolute; top: 50%; left: 0; right: 0; font-family: sans-serif; }
     </style>
   </head>
-  <script>
-  const sceneEl = document.querySelector('#scene');
-  const startBtn = document.querySelector('#startBtn');
-
-  startBtn.addEventListener('click', async () => {
-    try {
-      // Forcer la permission caméra
-      await navigator.mediaDevices.getUserMedia({ video: true });
-      console.log("✅ Caméra prête");
-      // Démarrer MindAR après l’autorisation
-      const mindarComponent = sceneEl.components['mindar-image'];
-      mindarComponent.start();
-      startBtn.remove(); // on enlève le bouton
-    } catch (err) {
-      alert("⚠️ Impossible d'accéder à la caméra : " + err.message);
-    }
-  });
-</script>
   <body>
     <div id="loading">🎥 Chargement Bluppi...</div>
 
@@ -39,7 +21,7 @@
   embedded
   renderer="colorManagement: true, physicallyCorrectLights"
   vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
+  device-orientation-permission-ui="enabled: true"
   loading-screen="enabled: false"
   id="scene"
 >
@@ -67,24 +49,5 @@
     ></a-video>
   </a-entity>
 </a-scene>
-
-<!-- Bouton manuel de démarrage -->
-<button id="startBtn"
-  style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-         padding:12px 24px;font-size:18px;border:none;border-radius:8px;
-         background:#ffd82b;color:black;z-index:10;">
-  ▶️ Lancer l’expérience
-</button>
-
-    <script>
-      // Test caméra dès le chargement
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(() => console.log("✅ Caméra OK"))
-        .catch(e => alert("⚠️ Caméra bloquée : " + e.name));
-
-      const loading = document.getElementById('loading');
-      const video = document.getElementById('bluppi-video');
-      video.addEventListener('loadeddata', () => loading.remove());
-    </script>
   </body>
 </html>
