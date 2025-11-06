@@ -8,24 +8,38 @@
     <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/aframe/mindar-image-aframe.prod.js"></script>
     <style>
-      body {
+      html, body {
         margin: 0;
         overflow: hidden;
         background: #000;
+        height: 100%;
+      }
+      #loading {
+        color: white;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        font-family: sans-serif;
       }
     </style>
   </head>
 
   <body>
+    <div id="loading">🎥 Chargement de Bluppi...</div>
+
     <a-scene
       mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
       color-space="sRGB"
       embedded
       renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: true"
-      device-orientation-permission-ui="enabled: false"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: true"
+      loading-screen="enabled: false"
     >
-      <a-assets>
+      <a-assets timeout="30000">
         <video
           id="bluppi-video"
           src="../../../assets/img/drop1/bluppi.mp4"
@@ -33,22 +47,33 @@
           loop
           muted
           playsinline
+          crossorigin="anonymous"
         ></video>
       </a-assets>
 
       <a-camera position="0 0 0"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <!-- La vidéo transparente se place directement sur le motif -->
         <a-video
+          id="bluppi-plane"
           src="#bluppi-video"
           width="1"
           height="1"
           position="0 0 0"
-          material="transparent: true;"
+          material="transparent:true;"
         ></a-video>
       </a-entity>
     </a-scene>
+
+    <script>
+      const loading = document.getElementById('loading');
+      const video = document.getElementById('bluppi-video');
+      video.addEventListener('loadeddata', () => {
+        loading.style.display = 'none';
+      });
+      video.addEventListener('error', (e) => {
+        loading.innerHTML = "⚠️ Erreur vidéo : " + e.message;
+      });
+    </script>
   </body>
 </html>
-
