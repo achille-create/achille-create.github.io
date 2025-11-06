@@ -8,27 +8,12 @@
     <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/aframe/mindar-image-aframe.prod.js"></script>
     <style>
-      html, body {
-        margin: 0;
-        overflow: hidden;
-        background: #000;
-        height: 100%;
-      }
-      #loading {
-        color: white;
-        text-align: center;
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        transform: translateY(-50%);
-        font-family: sans-serif;
-      }
+      html, body { margin: 0; overflow: hidden; background: #000; height: 100%; }
+      #loading { color: white; text-align: center; position: absolute; top: 50%; left: 0; right: 0; font-family: sans-serif; }
     </style>
   </head>
-
   <body>
-    <div id="loading">🎥 Chargement de Bluppi...</div>
+    <div id="loading">🎥 Chargement Bluppi...</div>
 
     <a-scene
       mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
@@ -36,44 +21,30 @@
       embedded
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: true"
+      device-orientation-permission-ui="enabled: false"
       loading-screen="enabled: false"
     >
-      <a-assets timeout="30000">
-        <video
-          id="bluppi-video"
-          src="../../../../assets/img/drop1/bluppi.mp4"
-          autoplay
-          loop
-          muted
-          playsinline
-          crossorigin="anonymous"
-        ></video>
+      <a-assets>
+        <video id="bluppi-video" src="https://achille-create.github.io/assets/img/drop1/bluppi.mp4"
+               autoplay loop muted playsinline crossorigin="anonymous"></video>
       </a-assets>
 
       <a-camera position="0 0 0"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-video
-          id="bluppi-plane"
-          src="#bluppi-video"
-          width="1"
-          height="1"
-          position="0 0 0"
-          material="transparent:true;"
-        ></a-video>
+        <a-video src="#bluppi-video" width="1" height="1" position="0 0 0" material="transparent:true;"></a-video>
       </a-entity>
     </a-scene>
 
     <script>
+      // Test caméra dès le chargement
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(() => console.log("✅ Caméra OK"))
+        .catch(e => alert("⚠️ Caméra bloquée : " + e.name));
+
       const loading = document.getElementById('loading');
       const video = document.getElementById('bluppi-video');
-      video.addEventListener('loadeddata', () => {
-        loading.style.display = 'none';
-      });
-      video.addEventListener('error', (e) => {
-        loading.innerHTML = "⚠️ Erreur vidéo : " + e.message;
-      });
+      video.addEventListener('loadeddata', () => loading.remove());
     </script>
   </body>
 </html>
