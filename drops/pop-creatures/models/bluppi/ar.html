@@ -1,99 +1,56 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TuftPop AR</title>
+
+    <!-- A-Frame et MindAR -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-    <!-- 🎨 Shader chroma key simple -->
-    <script>
-      AFRAME.registerShader('ck', {
-        schema: {
-          src: {type: 'map'},
-          color: {type: 'color', default: '#00FF00'},
-          threshold: {type: 'number', default: 0.35}
-        },
-        init: function (data) {
-          this.material = new THREE.ShaderMaterial({
-            uniforms: {
-              map: {value: data.src},
-              keyColor: {value: new THREE.Color(data.color)},
-              threshold: {value: data.threshold}
-            },
-            vertexShader: `
-              varying vec2 vUV;
-              void main() {
-                vUV = uv;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-              }
-            `,
-            fragmentShader: `
-              uniform sampler2D map;
-              uniform vec3 keyColor;
-              uniform float threshold;
-              varying vec2 vUV;
-              void main() {
-                vec4 color = texture2D(map, vUV);
-                float diff = distance(color.rgb, keyColor);
-                if (diff < threshold) discard;
-                gl_FragColor = color;
-              }
-            `,
-            transparent: true
-          });
-        },
-        update: function (data) {
-          if (data.src) this.material.uniforms.map.value = data.src;
-          this.material.uniforms.keyColor.value.set(data.color);
-          this.material.uniforms.threshold.value = data.threshold;
-        }
-      });
+    <!-- 🎨 Plugin chroma key officiel -->
+    <script src="https://cdn.jsdelivr.net/gh/mayognaise/aframe-chromakey-material@master/dist/aframe-chromakey-material.min.js"></script>
 
+    <!-- Composant simple : lecture pause -->
+    <script>
       AFRAME.registerComponent('playvideo', {
         init: function () {
           const marker = this.el;
-          const video = document.querySelector('#video1');
-          const plane = document.querySelector('#video-plane');
+          const video = document.querySelector('#greenscreenvideo');
 
-          marker.addEventListener('targetFound', () => {
-            console.log("🎯 Target found");
-            video.play().then(() => {
-              plane.setAttribute('material', 'shader: ck; src: #video1; color: #00FF00; threshold: 0.35;');
-            }).catch((err) => console.log("Video play error:", err));
-          });
-
-          marker.addEventListener('targetLost', () => {
-            console.log("❌ Target lost");
-            video.pause();
-          });
+          marker.addEventListener('targetFound', () => video.play().catch(()=>{}));
+          marker.addEventListener('targetLost',  () => video.pause());
         }
       });
     </script>
   </head>
 
   <body style="margin:0;overflow:hidden;background:transparent">
+    <!-- 🎥 La vidéo avec fond vert (cachée du DOM visuel) -->
+    <video id="greenscreenvideo"
+           src="https://achille-create.github.io/assets/img/drop1/bluppi.mp4"
+           loop muted playsinline webkit-playsinline
+           style="opacity:0;position:absolute;z-index:-1"></video>
+
     <a-scene
       mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
       embedded
-      color-space="sRGB"
-      renderer="colorManagement: true; physicallyCorrectLights: true; alpha: true"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false">
+      renderer="alpha:true"
+      vr-mode-ui="enabled:false"
+      device-orientation-permission-ui="enabled:false">
 
-      <a-assets>
-        <video id="video1"
-               src="https://achille-create.github.io/assets/img/drop1/bluppi.mp4"
-               preload="auto" loop muted playsinline webkit-playsinline crossorigin="anonymous">
-        </video>
-      </a-assets>
+      <a-camera></a-camera>
 
-      <a-camera position="0 0 0"></a-camera>
-
+      <!-- 🎯 Cible AR -->
       <a-entity mindar-image-target="targetIndex: 0" playvideo>
-        <a-plane id="video-plane"
-                 width="1"
-                 height="1"
-                 position="0 0 0.01">
+
+        <!-- 🟩 Plan affichant la vidéo sans fond vert -->
+        <a-plane
+          material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2"
+          position="0 0 0.01"
+          width="1"
+          height="1">
         </a-plane>
+
       </a-entity>
     </a-scene>
   </body>
