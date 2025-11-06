@@ -2,19 +2,37 @@
   <head>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+      AFRAME.registerShader('ck',{
+        schema:{src:{type:'map'},color:{type:'color',default:'#00FF00'},t:{type:'number',default:0.35}},
+        init:function(d){
+          this.material=new THREE.ShaderMaterial({
+            uniforms:{map:{value:d.src},k:{value:new THREE.Color(d.color)},t:{value:d.t}},
+            vertexShader:`varying vec2 v;void main(){v=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+            fragmentShader:`uniform sampler2D map;uniform vec3 k;uniform float t;varying vec2 v;
+              void main(){vec4 c=texture2D(map,v);if(distance(c.rgb,k)<t)discard;gl_FragColor=c;}`,
+            transparent:true});
+        },
+        update:function(d){
+          if(d.src)this.material.uniforms.map.value=d.src;
+          this.material.uniforms.k.value.set(d.color);
+          this.material.uniforms.t.value=d.t;
+        }
+      });
+    </script>
   </head>
   <body style="margin:0;overflow:hidden;background:transparent">
     <a-scene mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
              embedded renderer="alpha:true" vr-mode-ui="enabled:false"
              device-orientation-permission-ui="enabled:false">
       <a-assets>
-        <video id="v" src="https://achille-create.github.io/assets/img/drop1/bluppi.webm"
+        <video id="v" src="https://achille-create.github.io/assets/img/drop1/bluppi.mp4"
                autoplay loop muted playsinline></video>
       </a-assets>
       <a-camera></a-camera>
       <a-entity mindar-image-target="targetIndex:0">
         <a-plane width="1" height="1" position="0 0 0.01"
-                 material="src:#v;transparent:true;"></a-plane>
+                 material="shader:ck;src:#v;color:#00FF00;t:0.35"></a-plane>
       </a-entity>
     </a-scene>
   </body>
