@@ -103,5 +103,26 @@
       }
     }, 3000);
   </script>
+  <script>
+let lockCount = 0;
+let locked = false;
+
+marker.addEventListener('targetFound', () => {
+  lockCount = 0;
+  locked = false;
+});
+
+scene.addEventListener('targetUpdated', (e) => {
+  if (!locked) {
+    lockCount++;
+    if (lockCount > 10) { // après 10 frames stables
+      locked = true;
+      const entity = document.querySelector('#overlay');
+      entity.object3D.matrixAutoUpdate = false;
+      console.log("🔒 Tracking verrouillé");
+    }
+  }
+});
+</script>
 </body>
 </html>
