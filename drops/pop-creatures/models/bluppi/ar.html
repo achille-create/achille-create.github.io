@@ -12,29 +12,69 @@
       #loading { color: white; text-align: center; position: absolute; top: 50%; left: 0; right: 0; font-family: sans-serif; }
     </style>
   </head>
+  <script>
+  const sceneEl = document.querySelector('#scene');
+  const startBtn = document.querySelector('#startBtn');
+
+  startBtn.addEventListener('click', async () => {
+    try {
+      // Forcer la permission caméra
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      console.log("✅ Caméra prête");
+      // Démarrer MindAR après l’autorisation
+      const mindarComponent = sceneEl.components['mindar-image'];
+      mindarComponent.start();
+      startBtn.remove(); // on enlève le bouton
+    } catch (err) {
+      alert("⚠️ Impossible d'accéder à la caméra : " + err.message);
+    }
+  });
+</script>
   <body>
     <div id="loading">🎥 Chargement Bluppi...</div>
 
-    <a-scene
-      mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
-      color-space="sRGB"
-      embedded
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-      loading-screen="enabled: false"
-    >
-      <a-assets>
-        <video id="bluppi-video" src="https://achille-create.github.io/assets/img/drop1/bluppi.mp4"
-               autoplay loop muted playsinline crossorigin="anonymous"></video>
-      </a-assets>
+<a-scene
+  mindar-image="imageTargetSrc: bluppi.mind; autoStart: false;"
+  color-space="sRGB"
+  embedded
+  renderer="colorManagement: true, physicallyCorrectLights"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  loading-screen="enabled: false"
+  id="scene"
+>
+  <a-assets>
+    <video
+      id="bluppi-video"
+      src="https://achille-create.github.io/assets/media/moodies/bluppi.mp4"
+      autoplay
+      loop
+      muted
+      playsinline
+      crossorigin="anonymous"
+    ></video>
+  </a-assets>
 
-      <a-camera position="0 0 0"></a-camera>
+  <a-camera position="0 0 0"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-video src="#bluppi-video" width="1" height="1" position="0 0 0" material="transparent:true;"></a-video>
-      </a-entity>
-    </a-scene>
+  <a-entity mindar-image-target="targetIndex: 0">
+    <a-video
+      src="#bluppi-video"
+      width="1"
+      height="1"
+      position="0 0 0"
+      material="transparent:true;"
+    ></a-video>
+  </a-entity>
+</a-scene>
+
+<!-- Bouton manuel de démarrage -->
+<button id="startBtn"
+  style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+         padding:12px 24px;font-size:18px;border:none;border-radius:8px;
+         background:#ffd82b;color:black;z-index:10;">
+  ▶️ Lancer l’expérience
+</button>
 
     <script>
       // Test caméra dès le chargement
