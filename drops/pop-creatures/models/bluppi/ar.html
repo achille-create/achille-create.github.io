@@ -1,47 +1,61 @@
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+      AFRAME.registerComponent('playvideo', {
+        init: function () {
+          const marker = this.el;
+          const video = document.querySelector('#video1');
+          const videolink = document.querySelector('#video-plane');
+
+          marker.addEventListener('targetFound', () => {
+            console.log("🎯 Target found");
+            // On force la lecture selon le format supporté
+            video.play().then(() => {
+              videolink.setAttribute('src', '#video1');
+            }).catch((err) => console.log("Video play error:", err));
+          });
+
+          marker.addEventListener('targetLost', () => {
+            console.log("❌ Target lost");
+            video.pause();
+          });
+        }
+      });
+    </script>
   </head>
 
   <body style="margin:0;overflow:hidden;background:transparent">
     <a-scene
       mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
       embedded
-      renderer="alpha:true; colorManagement:true;"
-      vr-mode-ui="enabled:false"
-      device-orientation-permission-ui="enabled:false">
+      color-space="sRGB"
+      renderer="colorManagement: true; physicallyCorrectLights: true; alpha: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
 
       <a-assets>
-        <video id="v"
+        <!-- 🔹 ta vidéo MP4 ou WebM -->
+        <video id="video1"
                src="https://achille-create.github.io/assets/img/drop1/bluppi.mp4"
-               preload="auto" autoplay loop muted playsinline crossorigin="anonymous"></video>
+               preload="auto" loop muted playsinline webkit-playsinline crossorigin="anonymous">
+        </video>
       </a-assets>
 
-      <a-camera></a-camera>
+      <a-camera position="0 0 0"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex:0">
-        <!-- on met d’abord un plan rose visible -->
-        <a-plane id="p" width="1" height="1" position="0 0 0.01" color="#FF00FF"></a-plane>
+      <!-- Le marqueur et la vidéo superposée -->
+      <a-entity mindar-image-target="targetIndex: 0" playvideo>
+        <a-video id="video-plane"
+                 width="1"
+                 height="1"
+                 position="0 0 0.01"
+                 webkit-playsinline
+                 playsinline>
+        </a-video>
       </a-entity>
     </a-scene>
-
-    <script>
-      const plane = document.getElementById('p');
-      const video = document.getElementById('v');
-      const marker = document.querySelector('[mindar-image-target]');
-
-      // afficher le plan rose pour vérifier la détection
-      marker.addEventListener('targetFound', () => {
-        plane.setAttribute('visible', true);
-        video.play().catch(()=>{});
-        // quand la vidéo est prête, on l'applique comme texture standard
-        video.addEventListener('loadeddata', () => {
-          plane.setAttribute('material', 'src: #v; transparent: true;');
-        }, { once:true });
-      });
-    </script>
   </body>
 </html>
