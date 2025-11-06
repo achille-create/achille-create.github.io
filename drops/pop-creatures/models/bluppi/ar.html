@@ -1,21 +1,47 @@
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   </head>
+
   <body style="margin:0;overflow:hidden;background:transparent">
-    <a-scene mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
-             embedded renderer="alpha:true" vr-mode-ui="enabled:false"
-             device-orientation-permission-ui="enabled:false">
+    <a-scene
+      mindar-image="imageTargetSrc: bluppi.mind; autoStart: true;"
+      embedded
+      renderer="alpha:true; colorManagement:true;"
+      vr-mode-ui="enabled:false"
+      device-orientation-permission-ui="enabled:false">
+
       <a-assets>
-        <video id="v" src="https://achille-create.github.io/assets/img/drop1/bluppi.mp4"
-               autoplay loop muted playsinline></video>
+        <video id="v"
+               src="https://achille-create.github.io/assets/img/drop1/bluppi.mp4"
+               preload="auto" autoplay loop muted playsinline crossorigin="anonymous"></video>
       </a-assets>
+
       <a-camera></a-camera>
+
       <a-entity mindar-image-target="targetIndex:0">
-        <a-plane width="1" height="1" position="0 0 0.01"
-                 material="src:#v;transparent:true;"></a-plane>
+        <!-- on met d’abord un plan rose visible -->
+        <a-plane id="p" width="1" height="1" position="0 0 0.01" color="#FF00FF"></a-plane>
       </a-entity>
     </a-scene>
+
+    <script>
+      const plane = document.getElementById('p');
+      const video = document.getElementById('v');
+      const marker = document.querySelector('[mindar-image-target]');
+
+      // afficher le plan rose pour vérifier la détection
+      marker.addEventListener('targetFound', () => {
+        plane.setAttribute('visible', true);
+        video.play().catch(()=>{});
+        // quand la vidéo est prête, on l'applique comme texture standard
+        video.addEventListener('loadeddata', () => {
+          plane.setAttribute('material', 'src: #v; transparent: true;');
+        }, { once:true });
+      });
+    </script>
   </body>
 </html>
