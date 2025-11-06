@@ -1,0 +1,31 @@
+/* TUFTPOP™ minimal brand CSS */
+:root{
+  --bg:#F7F2E8; --fg:#1B1B1B; --muted:#D6D3CE;
+  --accent:#FFC8D8; /* Drop accent (Pop Creatures pastel rose) */
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;line-height:1.45}
+a{color:var(--fg);text-decoration:none}
+header,main,footer{max-width:980px;margin:auto;padding:24px}
+.hero{padding:64px 24px 16px;text-align:center}
+.logo{font-weight:800;letter-spacing:0.02em;font-size:42px}
+.logo .block{display:inline-block;line-height:1}
+.logo .line{display:block}
+.logo.outline{font-weight:900;-webkit-text-stroke:2px var(--fg);color:transparent}
+.sub{opacity:.75;margin-top:6px}
+.btn{display:inline-block;margin-top:16px;padding:12px 18px;border:2px solid var(--fg);border-radius:var(--radius);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}
+.card{background:#fff8;border:2px solid var(--fg);border-radius:var(--radius);padding:16px;transition:transform .08s ease}
+.card:hover{transform:translateY(-2px)}
+.badge{display:inline-block;padding:2px 8px;border:2px solid var(--fg);border-radius:999px;font-size:12px;margin-top:6px;background:var(--accent)}
+.thumb{width:100%;aspect-ratio:1/1;background:var(--muted);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.model main{display:grid;gap:16px;justify-items:center;text-align:center;padding-bottom:48px}
+.anim{width:min(420px,86vw);border-radius:12px;border:2px solid var(--fg);background:#fff}
+.caption{opacity:.85;margin:10px 0 20px}
+.back{margin-top:6px;border-bottom:2px solid var(--fg)}
+footer{opacity:.7;border-top:2px dashed var(--fg)}
+.small{font-size:13px}
+.note{background:var(--accent);padding:10px 12px;border:2px solid var(--fg);border-radius:10px}
+/* Mobile tweaks */
+@media (max-width:520px){ .logo{font-size:34px} }
