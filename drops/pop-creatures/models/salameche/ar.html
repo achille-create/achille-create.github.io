@@ -3,33 +3,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
 
-    <!-- A-Frame et MindAR -->
+    <!-- A-Frame + MindAR -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>   
+    <!-- Chroma key officiel -->
+    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
 
-       <script>
+    <script>
       AFRAME.registerComponent('playvideo', {
         init: function () {
           const marker = this.el;
-          const video = document.querySelector('#greenscreenvideo');
-
+          const video  = document.querySelector('#greenscreenvideo');
           marker.addEventListener('targetFound', () => video.play().catch(()=>{}));
           marker.addEventListener('targetLost',  () => video.pause());
         }
       });
-    </script> 
+    </script>
   </head>
 
   <body style="margin:0;overflow:hidden;background:transparent">
-    <!-- 🎥 La vidéo avec fond vert (cachée du DOM visuel) -->
+    <!-- Vidéo fond vert, cachée -->
     <video id="greenscreenvideo"
            src="https://achille-create.github.io/assets/img/drop1/salameche.mp4"
            loop muted playsinline webkit-playsinline
            style="opacity:0;position:absolute;z-index:-1"></video>
 
     <a-scene
-      mindar-image="imageTargetSrc: salameche.mind; autoStart: true; filterMinCF: 0.30; filterBeta: 5"
+      mindar-image="
+        imageTargetSrc: salameche.mind;
+        autoStart: true;
+        filterMinCF: 0.30;   <!-- ↑ plus grand = plus stable mais un peu plus de latence -->
+        filterBeta: 5;      <!-- ↑ plus grand = moins de latence (répond plus vite) -->
+      "
       embedded
       renderer="alpha:true"
       vr-mode-ui="enabled:false"
@@ -37,17 +42,14 @@
 
       <a-camera></a-camera>
 
-      <!-- 🎯 Cible AR -->
+      <!-- Cible + vidéo chroma key -->
       <a-entity mindar-image-target="targetIndex: 0" playvideo>
-
-        <!-- 🟩 Plan affichant la vidéo sans fond vert -->
         <a-plane
-          material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2"
+          material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2; threshold: 0.40"
           position="0 0 0.01"
           width="1.6"
           height="1.6">
         </a-plane>
-
       </a-entity>
     </a-scene>
   </body>
