@@ -6,7 +6,19 @@
     <!-- A-Frame et MindAR -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>    
+    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>   
+
+       <script>
+      AFRAME.registerComponent('playvideo', {
+        init: function () {
+          const marker = this.el;
+          const video = document.querySelector('#greenscreenvideo');
+
+          marker.addEventListener('targetFound', () => video.play().catch(()=>{}));
+          marker.addEventListener('targetLost',  () => video.pause());
+        }
+      });
+    </script> 
   </head>
 
   <body style="margin:0;overflow:hidden;background:transparent">
