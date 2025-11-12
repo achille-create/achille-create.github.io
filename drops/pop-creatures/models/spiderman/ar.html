@@ -1,105 +1,54 @@
 <html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PopTuft AR – Stable</title>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
 
-  <!-- A-Frame + MindAR -->
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <!-- Chroma key officiel (suppression fond vert) -->
-  <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
+    <!-- A-Frame et MindAR -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>   
 
-  <style>
-    html,body { margin:0; overflow:hidden; background:transparent; }
-    #start {
-      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-      font:600 18px system-ui, sans-serif; background:#000c; color:#fff; z-index:9; border:0;
-    }
-  </style>
+       <script>
+      AFRAME.registerComponent('playvideo', {
+        init: function () {
+          const marker = this.el;
+          const video = document.querySelector('#greenscreenvideo');
 
-  <script>
-    /* ❶ LISSAGE LOGICIEL : suit la pose du marqueur avec amorti (position + rotation) */
-    AFRAME.registerComponent('pose-smoother', {
-      schema:{ factor:{default:0.18} }, // 0.12–0.25 : augmente pour plus de stabilité
-      init(){ this.p=new THREE.Vector3(); this.q=new THREE.Quaternion(); this.s=new THREE.Vector3(); },
-      tick(){
-        const parent = this.el.parentEl.object3D;           // le target MindAR
-        const me     = this.el.object3D;                     // le holder lissé
-        parent.updateMatrixWorld();
-        parent.matrixWorld.decompose(this.p, this.q, this.s);
-        me.position.lerp(this.p, this.data.factor);          // amorti position
-        me.quaternion.slerp(this.q, this.data.factor);       // amorti rotation
-        me.scale.copy(this.s);                               // scale direct
-      }
-    });
-
-    /* ❷ VERROU DOUX : fige la pose après N frames quasi immobiles, déverrouille si gros écart */
-    AFRAME.registerComponent('pose-lock', {
-      schema:{ frames:{default:10}, move:{default:0.006} }, // frames stables / seuil
-      init(){ this.locked=false; this.ok=0; this.prev=new THREE.Matrix4(); },
-      tick(){
-        const parent=this.el.parentEl.object3D;
-        const me=this.el.object3D;
-        if (!this.locked){
-          const cur = parent.matrixWorld.clone();
-          const invPrev = this.prev.clone().invert();
-          const delta = cur.clone().multiply(invPrev);
-          const v=new THREE.Vector3(), q=new THREE.Qua
-ternion(), s=new THREE.Vector3();
-          delta.decompose(v,q,s);
-          const moveAmt = v.length() + Math.abs(q.x)+Math.abs(q.y)+Math.abs(q.z);
-          if (moveAmt < this.data.move) this.ok++; else this.ok=0;
-          if (this.ok >= this.data.frames){
-            this.locked = true;
-            me.matrixAutoUpdate = false;
-            me.matrix.copy(parent.matrixWorld);
-          }
-          this.prev.copy(cur);
-        } else {
-          // déverrouille si la pose réelle s'éloigne trop
-          const curPos = new THREE.Vector3().setFromMatrixPosition(parent.matrixWorld);
-          const mePos  = new THREE.Vector3().setFromMatrixPosition(me.matrix);
-          if (curPos.distanceTo(mePos) > 0.03){ // seuil
-            this.locked=false; this.ok=0; me.matrixAutoUpdate=true;
-          }
+          marker.addEventListener('targetFound', () => video.play().catch(()=>{}));
+          marker.addEventListener('targetLost',  () => video.pause());
         }
-      }
-    })
-  </script>
-</head>
-<body>
-  <!-- Vidéo fond vert (cachée) -->
-  <video id="greenscreenvideo"
-         src="https://achille-create.github.io/assets/img/drop1/spiderman.mp4"
-         preload="auto" loop muted playsinline webkit-playsinline
-         style="opacity:0;position:absolute;z-index:-1"></video>
+      });
+    </script> 
+  </head>
 
-  <!-- SCÈNE AR -->
-  <a-scene
-    mindar-image="
-      imageTargetSrc: spiderman.mind;
-      autoStart: true; filterMinCF: 0.08; filterBeta: 20;"
-    embedded
-    renderer="alpha:true; colorManagement:true;"
-    vr-mode-ui="enabled:false"
-    device-orientation-permission-ui="enabled:false">
+  <body style="margin:0;overflow:hidden;background:transparent">
+    <!-- 🎥 La vidéo avec fond vert (cachée du DOM visuel) -->
+    <video id="greenscreenvideo"
+           src="https://achille-create.github.io/assets/img/drop1/spiderman.mp4"
+           loop muted playsinline webkit-playsinline
+           style="opacity:0;position:absolute;z-index:-1"></video>
 
-    <a-camera position="0 0 0"></a-camera>
+    <a-scene
+      mindar-image="imageTargetSrc: spiderman.mind; autoStart: true; filterMinCF: 0.00001; filterBeta: 10000"
+      embedded
+      renderer="alpha:true"
+      vr-mode-ui="enabled:false"
+      device-orientation-permission-ui="enabled:false">
 
-    <!-- Cible MindAR -->
-    <a-entity mindar-image-target="targetIndex: 0" playvideo>
-      <!-- Holder lissé + verrou doux -->
-      <a-entity id="smooth-holder" pose-smoother="factor:0.18" pose-lock>
-        <!-- Plan vidéo chromakey (suppression du vert) ; petit z pour éviter z-fighting -->
+      <a-camera></a-camera>
+
+      <!-- 🎯 Cible AR -->
+      <a-entity mindar-image-target="targetIndex: 0" playvideo>
+
+        <!-- 🟩 Plan affichant la vidéo sans fond vert -->
         <a-plane
-          material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2; threshold: 0.45"
-          position="0 0 0.02"
-          width="1.6"
-          height="1.6">
+          material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2"
+          position="0 0 0.01"
+          width="1.3"
+          height="1.3">
         </a-plane>
+
       </a-entity>
-    </a-entity>
-  </a-scene>
-</body>
+    </a-scene>
+  </body>
 </html>
