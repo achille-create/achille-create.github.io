@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title></title>
+
+    <!-- A-Frame et MindAR -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>   
+
+       <script>
+      AFRAME.registerComponent('playvideo', {
+        init: function () {
+          const marker = this.el;
+          const video = document.querySelector('#greenscreenvideo');
+
+          marker.addEventListener('targetFound', () => video.play().catch(()=>{}));
+          marker.addEventListener('targetLost',  () => video.pause());
+        }
+      });
+    </script> 
+  </head>
+
+  <body style="margin:0;overflow:hidden;background:transparent">
+    <!-- 🎥 La vidéo avec fond vert (cachée du DOM visuel) -->
+    <video id="greenscreenvideo"
+           src="https://achille-create.github.io/assets/img/drop1/pikachu.mp4"
+           loop muted playsinline webkit-playsinline
+           style="opacity:0;position:absolute;z-index:-1"></video>
+
+    <a-scene
+      mindar-image="imageTargetSrc: pikachu.mind; autoStart: true; filterMinCF: 0.00001; filterBeta: 10000"
+      embedded
+      renderer="alpha:true"
+      vr-mode-ui="enabled:false"
+      device-orientation-permission-ui="enabled:false">
+
+      <a-camera></a-camera>
+
+      <!-- 🎯 Cible AR -->
+      <a-entity mindar-image-target="targetIndex: 0" playvideo>
+
+        <!-- 🟩 Plan affichant la vidéo sans fond vert -->
+        <a-plane
+          material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2"
+          position="0 0 0.01"
+          width="1.6"
+          height="1.6">
+        </a-plane>
+
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
