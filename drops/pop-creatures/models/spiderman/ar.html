@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -66,12 +65,10 @@ ternion(), s=new THREE.Vector3();
           }
         }
       }
-    });
+    })
   </script>
 </head>
-
 <body>
-
   <!-- Vidéo fond vert (cachée) -->
   <video id="greenscreenvideo"
          src="https://achille-create.github.io/assets/img/drop1/spiderman.mp4"
@@ -82,11 +79,7 @@ ternion(), s=new THREE.Vector3();
   <a-scene
     mindar-image="
       imageTargetSrc: spiderman.mind;
-      autoStart: true;
-      /* ❺ ANTI-JITTER MindAR (OneEuro) */
-      filterMinCF: 0.08;   /* ↓ plus bas = plus lissé (0.05–0.15 très stable) */
-      filterBeta: 20;      /* ↑ plus haut = plus réactif (15–30 conseillé) */
-    "
+      autoStart: true; filterMinCF: 0.08; filterBeta: 20;"
     embedded
     renderer="alpha:true; colorManagement:true;"
     vr-mode-ui="enabled:false"
