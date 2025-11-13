@@ -7,24 +7,6 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
-
-    <!-- Composant générique : lecture/pause par cible -->
-    <script>
-      AFRAME.registerComponent('playvideo', {
-        schema: { src: { type: 'selector' } }, // ex : playvideo="src: #vid0"
-        init: function () {
-          const marker = this.el;
-          const video  = this.data.src;
-
-          marker.addEventListener('targetFound', () => {
-            if (video && video.play) video.play().catch(()=>{});
-          });
-          marker.addEventListener('targetLost',  () => {
-            if (video && video.pause) video.pause();
-          });
-        }
-      });
-    </script>
   </head>
 
   <body style="margin:0;overflow:hidden;background:transparent">
