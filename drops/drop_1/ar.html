@@ -6,29 +6,23 @@
     <!-- A-Frame et MindAR -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
+    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>   
 
-    <!-- Composant générique : lecture/pause par cible -->
-    <script>
+       <script>
       AFRAME.registerComponent('playvideo', {
-        schema: { src: { type: 'selector' } }, // ex : playvideo="src: #vid0"
         init: function () {
           const marker = this.el;
-          const video  = this.data.src;
+          const video = document.querySelector('#greenscreenvideo');
 
-          marker.addEventListener('targetFound', () => {
-            if (video && video.play) video.play().catch(()=>{});
-          });
-          marker.addEventListener('targetLost',  () => {
-            if (video && video.pause) video.pause();
-          });
+          marker.addEventListener('targetFound', () => video.play().catch(()=>{}));
+          marker.addEventListener('targetLost',  () => video.pause());
         }
       });
-    </script>
+    </script> 
   </head>
 
   <body style="margin:0;overflow:hidden;background:transparent">
-    <!-- 🎥 Tes vidéos, cachées -->
+    <!-- Tes vidéos (fond vert), cachées -->
     <video id="vid0" src="https://achille-create.github.io/assets/img/drop1/tiplouf.mp4"
            preload="auto" loop muted playsinline webkit-playsinline
            style="opacity:0;position:absolute;z-index:-1"></video>
@@ -47,12 +41,7 @@
 
     <a-scene
       mindar-image="
-        imageTargetSrc: drop1_targets.mind;
-        autoStart: true;
-        maxTrack: 3;
-        filterMinCF: 0.0001;
-        filterBeta: 0.001;
-      "
+        imageTargetSrc: drop1_targets.mind; autoStart: true; maxTrack: 3; filterMinCF:0.0001; filterBeta: 0.001"
       embedded
       renderer="alpha:true"
       vr-mode-ui="enabled:false"
@@ -62,44 +51,27 @@
 
       <!-- Cible #0 -->
       <a-entity mindar-image-target="targetIndex: 0" playvideo="src: #vid0">
-        <a-plane
-          material="shader: chromakey; src: #vid0; color: 0.1 0.9 0.2; threshold: 0.45"
-          position="0 0 0.02"
-          width="1.8"
-          height="1.8">
-        </a-plane>
+        <a-plane material="shader: chromakey; src: #vid0; color: 0.1 0.9 0.2; threshold: 0.45"
+                 position="0 0 0.02" width="1.6" height="1.6"></a-plane>
       </a-entity>
 
       <!-- Cible #1 -->
       <a-entity mindar-image-target="targetIndex: 1" playvideo="src: #vid1">
-        <a-plane
-          material="shader: chromakey; src: #vid1; color: 0.1 0.9 0.2; threshold: 0.45"
-          position="-0.05 0 0.01"
-          width="1.5"
-          height="1.5">
-        </a-plane>
+        <a-plane material="shader: chromakey; src: #vid1; color: 0.1 0.9 0.2; threshold: 0.45"
+                 position="0 0 0.02" width="1.6" height="1.6"></a-plane>
       </a-entity>
 
       <!-- Cible #2 -->
       <a-entity mindar-image-target="targetIndex: 2" playvideo="src: #vid2">
-        <a-plane
-          material="shader: chromakey; src: #vid2; color: 0.1 0.9 0.2; threshold: 0.45"
-          position="0 0 0.02"
-          width="1.6"
-          height="1.6">
-        </a-plane>
+        <a-plane material="shader: chromakey; src: #vid2; color: 0.1 0.9 0.2; threshold: 0.45"
+                 position="0 0 0.02" width="1.6" height="1.6"></a-plane>
       </a-entity>
 
-      <!-- Cible #3 -->
+  <!-- Cible #3 -->
       <a-entity mindar-image-target="targetIndex: 3" playvideo="src: #vid3">
-        <a-plane
-          material="shader: chromakey; src: #vid3; color: 0.1 0.9 0.2; threshold: 0.45"
-          position="-0.05 0.11 0.01"
-          width="2.7"
-          height="2.7">
-        </a-plane>
+        <a-plane material="shader: chromakey; src: #vid3; color: 0.1 0.9 0.2; threshold: 0.45"
+                 position="-0.05 0.11 0.01" width="2.7" height="2.7"></a-plane>
       </a-entity>
-
     </a-scene>
   </body>
 </html>
