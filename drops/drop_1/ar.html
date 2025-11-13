@@ -41,13 +41,13 @@
 
     <a-scene
       mindar-image="
-        imageTargetSrc: targets.mind; autoStart: true; maxTrack: 3; filterMinCF:0.0001; filterBeta: 0.001"
+        imageTargetSrc: targets.mind; autoStart: true; maxTrack: 1; filterMinCF:0.0001; filterBeta: 0.001"
       embedded
       renderer="alpha:true"
       vr-mode-ui="enabled:false"
       device-orientation-permission-ui="enabled:false">
 
-      <a-camera position="0 0 0"></a-camera>
+      <a-camera></a-camera>
 
       <!-- Cible #0 -->
       <a-entity mindar-image-target="targetIndex: 0" playvideo="src: #vid0">
