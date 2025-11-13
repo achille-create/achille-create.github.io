@@ -3,38 +3,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
 
-    <!-- A-Frame et MindAR -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
+
+    <script>
+      AFRAME.registerComponent('playvideo', {
+        init: function () {
+          const marker = this.el;
+          const videoId = this.el.getAttribute('data-video');
+          const video = document.getElementById(videoId);
+
+          marker.addEventListener('targetFound', () => {
+            if (video) video.play().catch(() => {});
+          });
+          marker.addEventListener('targetLost', () => {
+            if (video) video.pause();
+          });
+        }
+      });
+    </script>
   </head>
 
   <body style="margin:0;overflow:hidden;background:transparent">
-    <!-- 🎥 Tes vidéos, cachées -->
+    <!-- 🎥 Tes vidéos cachées -->
     <video id="vid0" src="https://achille-create.github.io/assets/img/drop1/tiplouf.mp4"
-           loop muted playsinline webkit-playsinline
+           preload="auto" loop muted playsinline webkit-playsinline
            style="opacity:0;position:absolute;z-index:-1"></video>
 
     <video id="vid1" src="https://achille-create.github.io/assets/img/drop1/spiderman.mp4"
-           loop muted playsinline webkit-playsinline
+           preload="auto" loop muted playsinline webkit-playsinline
            style="opacity:0;position:absolute;z-index:-1"></video>
 
     <video id="vid2" src="https://achille-create.github.io/assets/img/drop1/salameche.mp4"
-           loop muted playsinline webkit-playsinline
+           preload="auto" loop muted playsinline webkit-playsinline
            style="opacity:0;position:absolute;z-index:-1"></video>
 
     <video id="vid3" src="https://achille-create.github.io/assets/img/drop1/pikachu.mp4"
-           loop muted playsinline webkit-playsinline
+           preload="auto" loop muted playsinline webkit-playsinline
            style="opacity:0;position:absolute;z-index:-1"></video>
 
     <a-scene
-      mindar-image="
-        imageTargetSrc: drop1_targets.mind;
-        autoStart: true;
-        maxTrack: 3;
-        filterMinCF: 0.0001;
-        filterBeta: 0.001;
-      "
+      mindar-image="imageTargetSrc: drop1_targets.mind; autoStart: true; maxTrack: 3; filterMinCF: 0.0001; filterBeta: 0.001"
       embedded
       renderer="alpha:true"
       vr-mode-ui="enabled:false"
@@ -43,7 +53,7 @@
       <a-camera position="0 0 0"></a-camera>
 
       <!-- Cible #0 -->
-      <a-entity mindar-image-target="targetIndex: 0" playvideo="src: #vid0">
+      <a-entity mindar-image-target="targetIndex: 0" playvideo data-video="vid0">
         <a-plane
           material="shader: chromakey; src: #vid0; color: 0.1 0.9 0.2; threshold: 0.45"
           position="0 0 0.02"
@@ -53,7 +63,7 @@
       </a-entity>
 
       <!-- Cible #1 -->
-      <a-entity mindar-image-target="targetIndex: 1" playvideo="src: #vid1">
+      <a-entity mindar-image-target="targetIndex: 1" playvideo data-video="vid1">
         <a-plane
           material="shader: chromakey; src: #vid1; color: 0.1 0.9 0.2; threshold: 0.45"
           position="-0.05 0 0.01"
@@ -63,7 +73,7 @@
       </a-entity>
 
       <!-- Cible #2 -->
-      <a-entity mindar-image-target="targetIndex: 2" playvideo="src: #vid2">
+      <a-entity mindar-image-target="targetIndex: 2" playvideo data-video="vid2">
         <a-plane
           material="shader: chromakey; src: #vid2; color: 0.1 0.9 0.2; threshold: 0.45"
           position="0 0 0.02"
@@ -73,7 +83,7 @@
       </a-entity>
 
       <!-- Cible #3 -->
-      <a-entity mindar-image-target="targetIndex: 3" playvideo="src: #vid3">
+      <a-entity mindar-image-target="targetIndex: 3" playvideo data-video="vid3">
         <a-plane
           material="shader: chromakey; src: #vid3; color: 0.1 0.9 0.2; threshold: 0.45"
           position="-0.05 0.11 0.01"
