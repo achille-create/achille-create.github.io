@@ -6,6 +6,22 @@
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
+    <script>
+      AFRAME.registerComponent('playvideo', {
+        init: function () {
+          const marker = this.el;
+          const videoId = marker.getAttribute('data-video');
+          const video = document.getElementById(videoId);
+
+          marker.addEventListener('targetFound', () => {
+            if (video) video.play().catch(() => {});
+          });
+          marker.addEventListener('targetLost', () => {
+            if (video) video.pause();
+          });
+        }
+      });
+    </script>
   </head>
 
   <body style="margin:0;overflow:hidden;background:transparent">
@@ -36,7 +52,7 @@
       <a-camera></a-camera>
 
       <!-- Cible #0 -->
-      <a-entity mindar-image-target="targetIndex: 0" playvideo>
+      <a-entity mindar-image-target="targetIndex: 0" playvideo data-video="vid0">
         <a-plane
           material="shader: chromakey; src: #vid0; color: 0.1 0.9 0.2; threshold: 0.45"
           position="0 0 0.02"
@@ -46,7 +62,7 @@
       </a-entity>
 
       <!-- Cible #1 -->
-      <a-entity mindar-image-target="targetIndex: 1" playvideo>
+      <a-entity mindar-image-target="targetIndex: 1" playvideo data-video="vid1">
         <a-plane
           material="shader: chromakey; src: #vid1; color: 0.1 0.9 0.2; threshold: 0.45"
           position="-0.05 0 0.01"
@@ -56,7 +72,7 @@
       </a-entity>
 
       <!-- Cible #2 -->
-      <a-entity mindar-image-target="targetIndex: 2" playvideo>
+      <a-entity mindar-image-target="targetIndex: 2" playvideo data-video="vid2">
         <a-plane
           material="shader: chromakey; src: #vid2; color: 0.1 0.9 0.2; threshold: 0.45"
           position="0 0 0.02"
@@ -66,7 +82,7 @@
       </a-entity>
 
       <!-- Cible #3 -->
-      <a-entity mindar-image-target="targetIndex: 3" playvideo>
+      <a-entity mindar-image-target="targetIndex: 3" playvideo data-video="vid3">
         <a-plane
           material="shader: chromakey; src: #vid3; color: 0.1 0.9 0.2; threshold: 0.45"
           position="-0.05 0.11 0.01"
