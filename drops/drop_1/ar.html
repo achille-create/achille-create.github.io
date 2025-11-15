@@ -44,8 +44,20 @@
            preload="auto" loop muted playsinline webkit-playsinline
            style="opacity:0;position:absolute;z-index:-1"></video>
 
+    <video id="vid4" src="https://achille-create.github.io/assets/img/drop1/onepiece.mp4"
+           preload="auto" loop muted playsinline webkit-playsinline
+           style="opacity:0;position:absolute;z-index:-1"></video>
+
+    <video id="vid5" src="https://achille-create.github.io/assets/img/drop1/pacman.mp4"
+           preload="auto" loop muted playsinline webkit-playsinline
+           style="opacity:0;position:absolute;z-index:-1"></video>
+
+    <video id="vid6" src="https://achille-create.github.io/assets/img/drop1/coeur.mp4"
+           preload="auto" loop muted playsinline webkit-playsinline
+           style="opacity:0;position:absolute;z-index:-1"></video>
+
     <a-scene
-      mindar-image="imageTargetSrc: targets.mind; autoStart: true; maxTrack: 4; filterMinCF:0.0001; filterBeta: 0.001"
+      mindar-image="imageTargetSrc: targets.mind; autoStart: true; maxTrack: 7; filterMinCF:0.0001; filterBeta: 0.001"
       embedded
       renderer="alpha:true"
       vr-mode-ui="enabled:false"
@@ -75,6 +87,24 @@
       <a-entity mindar-image-target="targetIndex: 3" playvideo data-video="vid3">
         <a-plane material="shader: chromakey; src: #vid3; color: 0.1 0.9 0.2; threshold: 0.45"
                  position="0 0.11 0.01" width="2.27" height="2.27"></a-plane>
+      </a-entity>
+
+      <!-- targetIndex 4 ONE PIECE-->
+      <a-entity mindar-image-target="targetIndex: 4" playvideo data-video="vid4">
+        <a-plane material="shader: chromakey; src: #vid4; color: 0.1 0.9 0.2; threshold: 0.45"
+                 position="0 0 0.01" width="1" height="1"></a-plane>
+      </a-entity>
+
+      <!-- targetIndex 5 PACMAN-->
+      <a-entity mindar-image-target="targetIndex: 5" playvideo data-video="vid5">
+        <a-plane material="shader: chromakey; src: #vid5; color: 0.1 0.9 0.2; threshold: 0.45"
+                 position="0 0 0.01" width="1" height="1"></a-plane>
+      </a-entity>
+
+      <!-- targetIndex 6 COEUR-->
+      <a-entity mindar-image-target="targetIndex: 6" playvideo data-video="vid6">
+        <a-plane material="shader: chromakey; src: #vid6; color: 0.1 0.9 0.2; threshold: 0.45"
+                 position="0 0 0.01" width="1" height="1"></a-plane>
       </a-entity>
 
     </a-scene>
